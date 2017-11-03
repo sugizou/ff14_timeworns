@@ -4,6 +4,9 @@
     <title>ff14 timeworn assist tools</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <script type="text/javascript">
+        var version = "1509719831845";
+    </script>
   </head>
   <body>
     <div class="container">
@@ -27,21 +30,19 @@
                     <div class="form-group">
                       <div v-if="areaSelectShowable">
                         <label for="form-member-area">地図の地域</label>
-                        <select name="member_area" id="form-member-area" class="form-control" v-on:change="showAreaMap" v-model="areaLocation">
+                        <select name="member_area" id="form-member-area" class="form-control" v-on:change="showAreaMap" v-model="selectedArea">
                           <option>選択してください</option>
-                          <option value="gyr-abania-fringes">ギラバニア辺境地帯</option>
-                          <option value="gyr-abania-peaks">ギラバニア山岳地帯</option>
-                          <option value="gyr-abania-lochs">ギラバニア湖畔地帯</option>
-                          <option value="othard-ruby-sea">紅玉海</option>
-                          <option value="othard-yanxia">ヤンサ</option>
-                          <option value="othard-azim-steppe">アジムステップ</option>
+                          <option v-for="area in areas" v-bind:value="area.key">{{area.name}}</option>
                         </select>
                       </div>
                     </div>
                   </div>
                   <div id="map-image" v-if="areaImageShowable">
-                    <img v-bind:src="'./img/' + areaLocation + '.png'" usemap="treasurePoint">
-                    <map name="treasurePoint" v-html="treasurePoint"></map>
+                    <label>地図の位置</label>
+                    <img v-bind:src="'./img/' + imageName + '.png'" usemap="treasurePoint" v-if="selectedArea">
+                    <map name="treasurePoint">
+                        <area-list v-for="(point, index) in points" v-bind:location="selectedArea" v-bind:point="point" v-bind:index="index">
+                    </map>
                   </div>
                 </div>
               </div>
@@ -63,6 +64,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue"></script>
-    <script src="./js/application.js"></script>
+    <script src="./js/application.js?v=1509720258151"></script>
   </body>
 </html>
