@@ -3,59 +3,152 @@
   <head>
     <title>ff14 timeworn assist tools</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <script type="text/javascript">
-        var version = "1509719831845";
+      var version = "1509719831845";
     </script>
+    <style type="text/css">
+      [v-cloak] > * { display:none; }
+    </style>
   </head>
   <body>
     <div class="container">
       <div class="row">
-        <h4>ff14古ぼけた地図アシストツール</h4>
+        <h4>ff14古ぼけた地図G10アシストツール</h4>
       </div>
       <div class="row">
-        <div class="col-sm-4">
-          <div class="card">
-            <div class="card-body">
-              <div id="member-add-area">
-                <div class="form-group">
-                  <button id="user-add" class="btn btn-info" v-on:click="showAddMemberForm">メンバーの追加</button>
-                </div>
-                <div id="member-info" v-if="nameTextShowable">
+        <div class="col-md-5">
+          <div id="member-add-area" v-cloak>
+            <div class="card m-1">
+              <div class="card-header">メンバーの追加</div>
+              <div class="card-body">
+                <div id="member-info">
                   <div id="member-form-area">
                     <div class="form-group">
                       <label for="form-member-name">メンバーの名前</label>
                       <input type="text" name="member_name" id="form-member-name" class="form-control" v-model="memberName" v-on:keyup="inputMemberName">
                     </div>
                     <div class="form-group">
-                      <div v-if="areaSelectShowable">
-                        <label for="form-member-area">地図の地域</label>
-                        <select name="member_area" id="form-member-area" class="form-control" v-on:change="showAreaMap" v-model="selectedArea">
-                          <option>選択してください</option>
-                          <option v-for="area in areas" v-bind:value="area.key">{{area.name}}</option>
-                        </select>
-                      </div>
+                      <transition name="fade">
+                        <div v-if="areaSelectShowable">
+                          <label for="form-member-area">地図の地域</label>
+                          <select name="member_area" id="form-member-area" class="form-control" v-on:change="showAreaMap" v-model="selectedArea">
+                            <option>選択してください</option>
+                            <option v-for="area in areas" v-bind:value="area.key">{{area.name}}</option>
+                          </select>
+                        </div>
+                      </transition>
                     </div>
                   </div>
-                  <div id="map-image" v-if="areaImageShowable">
-                    <label>地図の位置</label>
-                    <img v-bind:src="'./img/' + imageName + '.png'" usemap="treasurePoint" v-if="selectedArea">
-                    <map name="treasurePoint">
-                        <area-list v-for="(point, index) in points" v-bind:location="selectedArea" v-bind:point="point" v-bind:index="index">
-                    </map>
-                  </div>
+                  <transition name="fade">
+                    <div id="map-image" v-if="areaImageShowable">
+                      <p>
+                        <label>地図の位置</label>
+                        <span v-if="selectedPoint">X:{{selectedPoint.x}}, Y:{{selectedPoint.y}}</span>
+                      </p>
+                      <div class="text-center">
+                        <img v-bind:src="'./img/' + imageName + '.png'" usemap="treasurePoint" v-if="selectedArea" style="max-width: 300px;">
+                      </div>
+                      <map name="treasurePoint">
+                          <area-list v-for="(point, index) in points" v-bind:location="selectedArea" v-bind:point="point" v-bind:index="index" v-bind:selectedPoint="selectedPoint">
+                      </map>
+                    </div>
+                  </transition>
+                  <transition name="fade">
+                    <div id="member-add-submit-area" v-if="submitAreaShowable">
+                      <div class="form-group p-5">
+                        <button class="btn btn-success btn-block form-control" v-on:click="addMember">この内容で追加する</button>
+                      </div>
+                    </div>
+                  </transition>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-sm-8" style="background-color: #fcf">
-          <div id="sort-area">
-          </div>
-          <div id="oparation-area">
-          </div>
-          <div id="member-area">
-          </div>
+        <div class="col-md-7">
+          <transition name="fade">
+            <div id="members-sort-area" v-if="memberSortAreaShowable" v-cloak>
+              <div id="sort-area">
+              </div>
+              <div id="oparation-area">
+                <div class="card m-1">
+                  <div class="card-body">
+                    <div class="justify-content-around d-flex">
+                      <button class="btn btn-primary" v-on:click="sortMembers">順番を入れ替える</button>
+                      <button class="btn btn-info" v-bind:disabled="notSortedMembers" data-toggle="modal" data-target="#macroMessage" v-on:click="changeMacroMessage">マクロメッセージ</button>
+
+                      <div class="modal fade" id="macroMessage" tabindex="-2" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              マクロメッセージのコピー
+                            </div>
+                            <div class="modal-body">
+                              <div class="form-check">
+                                <label class="form-check-label">
+                                  <input type="checkbox" name="toggleDescriptionMessage" class="form-check-input" v-model="addedDescMessage" v-on:change="changeMacroMessage">メッセージに概要を付け足す
+                                </label>
+                              </div>
+                              <div class="form-group">
+                                <textarea class="form-control" rows="10" readonly="readonly" onclick="javascript:select();">{{ macroMessage }}</textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="member-area">
+                <div class="card m-1">
+                  <div class="card-body">
+                    <ul class="list-group">
+                      <li class="list-group-item" v-for="member in members">
+                        <div class="row">
+                          <div class="col-9">
+                            <div class="h5">
+                              {{member.name}}
+                            </div>
+                            <div>
+                              <small>{{member.area.name}}(X:{{member.point.x}}, Y:{{member.point.y}})</small><br>
+                              <small class="text-muted">{{member.point.description}}</small>
+                            </div>
+                          </div>
+                          <div class="col-3">
+                            <button type="button" class="close" aria-label="Close" data-toggle="modal" :data-target="'#remove-member-modal' + member.id">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                            <div class="modal fade" v-bind:id="'remove-member-modal' + member.id" tabindex="-1" role="dialog" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header"></div>
+                                  <div class="modal-body">
+                                    メンバー: {{ member.name }}を一覧から削除します。<br>
+                                    よろしいですか？
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+                                    <button class="btn btn-danger" v-on:click="removeMember(member.id)" data-dismiss="modal">削除</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
         </div>
       </div>
     </div>
@@ -64,6 +157,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/vue"></script>
-    <script src="./js/application.js?v=1509720258151"></script>
+    <script src="./js/vue/member_form.js?v=1509720258151"></script>
+    <script src="./js/vue/member_sort.js?v=1509720258151"></script>
   </body>
 </html>
