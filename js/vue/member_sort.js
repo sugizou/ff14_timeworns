@@ -144,7 +144,7 @@ var memberSort  = new Vue({
       return mems;
     },
     getNearAreaKey: function(members, areaKey) {
-      var area = memberAdd.areas.find(function(area) { return area.key == areaKey; });
+      var area = memberForm.areas.find(function(area) { return area.key == areaKey; });
 
       members.sort(function(a, b) {
         var abs_a = Math.abs(a.area.order - area.order);
