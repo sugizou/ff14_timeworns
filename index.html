@@ -48,7 +48,7 @@
                         <span v-if="selectedPoint">X:{{selectedPoint.x}}, Y:{{selectedPoint.y}}</span>
                       </p>
                       <div class="text-center">
-                        <img v-bind:src="'./img/' + imageName + '.png'" usemap="treasurePoint" v-if="selectedArea" style="max-width: 300px;">
+                        <img v-bind:src="'./img/' + imageName + '.png'" usemap="#treasurePoint" v-if="selectedArea" style="max-width: 300px;">
                       </div>
                       <map name="treasurePoint">
                           <area-list v-for="(point, index) in points" v-bind:location="selectedArea" v-bind:point="point" v-bind:index="index" v-bind:selectedPoint="selectedPoint">
