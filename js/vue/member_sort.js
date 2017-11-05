@@ -2,7 +2,7 @@ var memberSort  = new Vue({
   el: "#members-sort-area",
   data: {
     // flags
-    memberSortAreaShowable: true,
+    memberSortAreaShowable: false,
     notSortedMembers: false,
     removeModalShowable: false,
     addedDescMessage: false,
