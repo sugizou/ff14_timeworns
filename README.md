@@ -10,4 +10,5 @@ image: Copyright (C) 2010 - 2017 SQUARE ENIX CO., LTD. All Rights Reserved.
 
 # LICENSE
 
-sources - MIT License
+[MIT License](https://github.com/sugizou/ff14_timeworns/blob/master/LICENSE)
+
