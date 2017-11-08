@@ -1,3 +1,5 @@
+const sweetScroll = new SweetScroll();
+
 var memberForm = new Vue({
   el: "#member-add-area",
   data: {
@@ -83,7 +85,7 @@ var memberForm = new Vue({
       ]
     },
     points: [],
-    imageName: "noimage"
+    imageName: ""
   },
   methods: {
     inputMemberName: function() {
@@ -101,17 +103,20 @@ var memberForm = new Vue({
       this.selectedPoint = null;
       this.submitAreaShowable = false;
 
-      let ps = this.treasurePoints[this.selectedArea];
-
+      var ps = this.treasurePoints[this.selectedArea];
       if (ps && ps.length > 0) {
         this.points = ps;
-        this.imageName = this.selectedArea;
-        this.areaImageShowable = true;
+        this.changeImage(this.selectedArea);
       }
       else {
-        this.imageName = "noimage";
-        this.areaImageShowable = false;
+        if (this.imageName != 'noimage')
+          this.changeImage('noimage');
       }
+    },
+    changeImage: function(imageName) {
+      this.areaImageShowable = false;
+      this.imageName = imageName;
+      setInterval(function() { memberForm.areaImageShowable = true; }, 1000);
     },
     addMember: function() {
       var area = this.areas.find(function(a) {
@@ -122,19 +127,29 @@ var memberForm = new Vue({
 
       this.resetForm();
       this.resetFlag();
+      this.resetHash();
     },
     resetForm: function() {
       this.memberName = this.selectedPoint = this.selectedArea = null;
     },
     resetFlag: function() {
       this.areaSelectShowable = this.areaImageShowable = this.submitAreaShowable = false;
+    },
+    resetHash: function() {
+      location.hash = '';
+    },
+    toggleScrollSubmitArea: function() {
+      if (this.submitAreaShowable)
+        location.hash = "member-add-submit-area";
+      else
+        location.hash = "";
     }
   }
 });
 
 Vue.component('area-list', {
   props: ['point', 'index', 'area', 'memberName'],
-  template: '<area shape="rect" v-bind:coords="point.coords" v-on:click="selectTreasurePoint">',
+  template: '<area shape="rect" v-bind:coords="point.coords" v-on:click="selectTreasurePoint" href="#member-add-submit-area" data-scroll>',
   methods: {
     selectTreasurePoint: function() {
       memberForm.selectedPoint = this.point;
