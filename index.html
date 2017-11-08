@@ -11,13 +11,14 @@
     <style type="text/css">
       [v-cloak] > * { display:none; }
       .fade-enter-active, .fade-leave-active {
-        transition: opacity .5s
+        transition: opacity 1s
       }
       .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
         opacity: 0
       }
-      .fade-fast-enter-active, .fade-fast-leave-active {
-        transition: opacity .2s
+
+      .fade-fast-enter-active, .fade-leave-active {
+        transition: opacity 0.3s
       }
       .fade-fast-enter, .fade-fast-leave-to /* .fade-leave-active below version 2.1.8 */ {
         opacity: 0
@@ -25,13 +26,13 @@
     </style>
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
+    <article class="container-fluid">
+      <section class="row">
         <div class="col-12 pt-3 pb-3">
           <h4>ff14古ぼけた地図G10アシストツール(α版)</h4>
         </div>
-      </div>
-      <div class="row">
+      </section>
+      <section class="row">
         <div class="col-md-5">
           <div id="member-add-area" v-cloak>
             <div class="card m-1">
@@ -43,40 +44,37 @@
                       <label for="form-member-name">メンバーの名前</label>
                       <input type="text" name="member_name" id="form-member-name" class="form-control" v-model="memberName" v-on:keyup="inputMemberName">
                     </div>
-                    <div class="form-group">
-                      <transition name="fade">
-                        <div v-if="areaSelectShowable">
+                    <transition name="fade">
+                      <div v-if="areaSelectShowable">
+                        <div class="form-group">
                           <label for="form-member-area">地図の地域</label>
                           <select name="member_area" id="form-member-area" class="form-control" v-on:change="showAreaMap" v-model="selectedArea">
                             <option>選択してください</option>
                             <option v-for="area in areas" v-bind:value="area.key">{{area.name}}</option>
                           </select>
                         </div>
-                      </transition>
-                    </div>
+                        <div id="map-image">
+                          <p>
+                            <label>地図の位置</label>
+                            <span v-if="selectedPoint">X:{{selectedPoint.x}}, Y:{{selectedPoint.y}}</span>
+                          </p>
+                          <div class="text-center">
+                            <transition name="fade">
+                            <img v-bind:src="'./img/' + imageName + '.png'" usemap="#treasurePoint" style="max-width: 300px;" v-if="areaImageShowable">
+                            </transition>
+                          </div>
+                          <map name="treasurePoint">
+                            <area-list v-for="(point, index) in points" v-bind:location="selectedArea" v-bind:point="point" v-bind:index="index" v-bind:selectedPoint="selectedPoint">
+                          </map>
+                          <div id="member-add-submit-area">
+                            <div class="form-group p-5">
+                              <button class="btn btn-success btn-block form-control" v-on:click="addMember" v-bind:disabled="!submitAreaShowable">この内容で追加する</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </transition>
                   </div>
-                  <transition name="fade">
-                    <div id="map-image" v-if="areaImageShowable">
-                      <p>
-                        <label>地図の位置</label>
-                        <span v-if="selectedPoint">X:{{selectedPoint.x}}, Y:{{selectedPoint.y}}</span>
-                      </p>
-                      <div class="text-center">
-                        <img v-bind:src="'./img/' + imageName + '.png'" usemap="#treasurePoint" v-if="selectedArea" style="max-width: 300px;">
-                      </div>
-                      <map name="treasurePoint">
-                          <area-list v-for="(point, index) in points" v-bind:location="selectedArea" v-bind:point="point" v-bind:index="index" v-bind:selectedPoint="selectedPoint">
-                      </map>
-                    </div>
-                  </transition>
-                  <a id="member-add-submit-area"  name="member-add-submit-area"></a>
-                  <transition name="fade-fast"  v-on:after-enter="toggleScrollSubmitArea" v-on:after-leave="toggleScrollSubmitArea">
-                    <div v-if="submitAreaShowable">
-                      <div class="form-group p-5">
-                        <button class="btn btn-success btn-block form-control" v-on:click="addMember">この内容で追加する</button>
-                      </div>
-                    </div>
-                  </transition>
                 </div>
               </div>
             </div>
@@ -165,12 +163,13 @@
             </div>
           </transition>
         </div>
-      </div>
-    </div>
+      </section>
+    </article>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <script src="./js/sweet-scroll.min.js"></script>
     <script src="https://unpkg.com/vue"></script>
     <script src="./js/vue/member_form.js?v=1509720258151"></script>
     <script src="./js/vue/member_sort.js?v=1509720258151"></script>
