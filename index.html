@@ -10,12 +10,26 @@
     </script>
     <style type="text/css">
       [v-cloak] > * { display:none; }
+      .fade-enter-active, .fade-leave-active {
+        transition: opacity .5s
+      }
+      .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0
+      }
+      .fade-fast-enter-active, .fade-fast-leave-active {
+        transition: opacity .2s
+      }
+      .fade-fast-enter, .fade-fast-leave-to /* .fade-leave-active below version 2.1.8 */ {
+        opacity: 0
+      }
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row">
-        <h4>ff14古ぼけた地図G10アシストツール(α版)</h4>
+        <div class="col-12 pt-3 pb-3">
+          <h4>ff14古ぼけた地図G10アシストツール(α版)</h4>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-5">
@@ -55,8 +69,9 @@
                       </map>
                     </div>
                   </transition>
-                  <transition name="fade">
-                    <div id="member-add-submit-area" v-if="submitAreaShowable">
+                  <a id="member-add-submit-area"  name="member-add-submit-area"></a>
+                  <transition name="fade-fast"  v-on:after-enter="toggleScrollSubmitArea" v-on:after-leave="toggleScrollSubmitArea">
+                    <div v-if="submitAreaShowable">
                       <div class="form-group p-5">
                         <button class="btn btn-success btn-block form-control" v-on:click="addMember">この内容で追加する</button>
                       </div>
